@@ -2,13 +2,17 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      // Ruta raíz: Muestra el Login
+      { path: '', component: () => import('pages/LoginPage.vue') },
+
+      // Ruta protegida: Muestra los Digimons (TU PARTE)
+      { path: 'digimon', component: () => import('pages/DigimonPage.vue') },
+    ],
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
-    path: '/:catchAll(.*)*',
+    path: '/:catchAll(.)',
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ]
