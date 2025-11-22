@@ -3,20 +3,29 @@ import { api } from 'boot/axios'
 
 export const useDigimonStore = defineStore('digimon', {
   state: () => ({
-    digimons: [], // Aquí se guardan los datos
-    filter: '',   // Aquí se guarda lo que escribas en el buscador
-    loading: false
+    digimons: [],
+    filterName: '',    // Filtro de texto
+    filterLevel: null, // Filtro de nivel
+    loading: false,
+    levels: ['Fresh', 'Training', 'Rookie', 'Champion', 'Ultimate', 'Mega', 'Armor']
   }),
 
   getters: {
-    // Esta función filtra la lista automáticamente por Nombre o Nivel
     filteredDigimons: (state) => {
-      if (!state.filter) return state.digimons
-      const busqueda = state.filter.toLowerCase()
-      return state.digimons.filter(d =>
-        d.name.toLowerCase().includes(busqueda) ||
-        d.level.toLowerCase().includes(busqueda)
-      )
+      let data = state.digimons
+
+      // Filtro por Nivel
+      if (state.filterLevel) {
+        data = data.filter(d => d.level === state.filterLevel)
+      }
+
+      // Filtro por Nombre
+      if (state.filterName) {
+        const search = state.filterName.toLowerCase()
+        data = data.filter(d => d.name.toLowerCase().includes(search))
+      }
+
+      return data
     }
   },
 
@@ -24,11 +33,10 @@ export const useDigimonStore = defineStore('digimon', {
     async fetchDigimons() {
       this.loading = true
       try {
-        // URL exacta que pide el examen
         const response = await api.get('https://digimon-api.vercel.app/api/digimon')
         this.digimons = response.data
       } catch (error) {
-        console.error('Error al descargar digimons:', error)
+        console.error('Error cargando digimons:', error)
       } finally {
         this.loading = false
       }
